@@ -8,22 +8,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.NonNull;
 
-@Entity
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
 public class Weather {
-    @Id
-    @GeneratedValue
     private int id;
-
-    @NonNull
-    private String city;
-    @NonNull
-    private double temperature;
-
-    public Weather(@NonNull String city, double temperature) {
-        this.city = city;
-        this.temperature = temperature;
-    }
+    private String main;
+    private String description;
+    private String icon;
 }

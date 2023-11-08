@@ -1,30 +1,29 @@
 package com.example.weather.controller;
 
+import com.example.weather.model.Main;
+import com.example.weather.model.Root;
 import com.example.weather.model.Weather;
-import com.example.weather.repository.WeatherRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @RestController
-@RequestMapping("/weather")
 public class WeatherController {
 
     @Autowired
-    private WeatherRepository repository;
+    private RestTemplate restTemplate;
+    @Value("${appid}")
+    private String appId;
+    @Value("${url.weather}")
+    private String urlWeather;
 
-    @GetMapping
-    public Iterable<Weather> findAll() {
-        return repository.findAll();
+    @Cacheable("weatherCache")
+    public Main getWeather(@RequestParam String lat, @RequestParam String lon) {
+        String request = String.format("%s?lat=%s&lon=%s&units=metric&appid=%s",
+                urlWeather, lat, lon, appId);
+        return restTemplate.getForObject(request, Root.class).getMain();
     }
 
-    @GetMapping("/{id}")
-    public Weather findById(@PathVariable int id) {
-        return repository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Weather with id " + id + " not found"));
-    }
-
-    @PostMapping
-    public Weather save(@RequestBody Weather weather) {
-        return repository.save(weather);
-    }
 }
