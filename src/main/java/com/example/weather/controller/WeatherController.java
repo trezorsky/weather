@@ -20,6 +20,7 @@ public class WeatherController {
     private String urlWeather;
 
     @Cacheable("weatherCache")
+    @GetMapping
     public Main getWeather(@RequestParam String lat, @RequestParam String lon) {
         String request = String.format("%s?lat=%s&lon=%s&units=metric&appid=%s",
                 urlWeather, lat, lon, appId);
