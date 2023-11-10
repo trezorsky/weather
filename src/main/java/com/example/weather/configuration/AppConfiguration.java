@@ -16,4 +16,9 @@ public class AppConfiguration {
         return new RestTemplate();
     }
 
+    @Bean
+    public CacheManager cacheManager() {
+        return new ConcurrentMapCacheManager("weatherCache");
+    }
+
 }
