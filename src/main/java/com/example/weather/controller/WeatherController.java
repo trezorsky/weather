@@ -12,17 +12,15 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@CacheConfig(cacheNames = "weatherCache")
 public class WeatherController {
 
     @Autowired
-    private RestTemplate restTemplate ;
+    private RestTemplate restTemplate;
     @Value("${appid}")
     private String appId;
     @Value("${url.weather}")
     private String urlWeather;
 
-    @Cacheable(key = "{#lat, #lon}")
     @GetMapping
     public Main getWeather(@RequestParam String lat, @RequestParam String lon) {
         String request = String.format("%s?lat=%s&lon=%s&units=metric&appid=%s",
