@@ -6,11 +6,12 @@ import com.example.weather.model.Weather;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 @RestController
-@CacheConfig(cacheNames = "weatherCache")
+@EnableScheduling
 public class WeatherController {
 
     @Autowired
@@ -20,12 +21,16 @@ public class WeatherController {
     @Value("${url.weather}")
     private String urlWeather;
 
-    @Cacheable(key = "{#lat, #lon}")
+    @Cacheable(value = "weatherCache", key = "#lat + '_' + #lon")
     @GetMapping
     public Main getWeather(@RequestParam String lat, @RequestParam String lon) {
         String request = String.format("%s?lat=%s&lon=%s&units=metric&appid=%s",
                 urlWeather, lat, lon, appId);
         return restTemplate.getForObject(request, Root.class).getMain();
     }
+
+    @Scheduled(fixedDelay = 60000)
+    @CacheEvict(value = "weatherCache", key = "#lat + '_' + #lon", cacheManager = "cacheManager", allEntries = true)
+    public void evictCache() {}
 
 }
